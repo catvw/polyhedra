@@ -2,24 +2,23 @@
 #include <cmath>
 #include <ostream>
 #include <type_traits>
+#include <array>
 
-#include <iostream> // debugging
-
-template <int D>
+template <std::size_t D>
 class vector;
 
 /* forward declarations to tell the class these are templates */
-template <int D>
-vector<D> operator+(vector<D> lh, const vector<D>& rh);
-template <int D>
-vector<D> operator-(vector<D> lh, const vector<D>& rh);
+template <std::size_t D>
+vector<D> operator+(vector<D>, const vector<D>&);
+template <std::size_t D>
+vector<D> operator-(vector<D>, const vector<D>&);
 
 /**
  * Simple vector class for my ridiculous polyhedron modeler.
  *
  * @author Charles Van West
  */
-template <int D>
+template <std::size_t D>
 class vector {
 public:
     vector();
@@ -35,70 +34,102 @@ public:
     double& operator[](const std::size_t);
     const double& operator[](const std::size_t) const;
     
+    friend vector<D> operator+ <> (vector<D>, const vector<D>&);
+    friend vector<D> operator- <> (vector<D>, const vector<D>&);
+    
+    /**
+     * Finds the dot-product of two vectors.
+     */
+    double operator*(const vector<D>&) const;
+    
     /**
      * Gets the absolute value (length) of the vector.
      */
     double operator()() const;
     
-    friend vector<D> operator+ <> (vector<D> lh, const vector<D>& rh);
-    friend vector<D> operator- <> (vector<D> lh, const vector<D>& rh);
+    /**
+     * Gets the absolute angle between this vector and another one in radians.
+     */
+    double angle(const vector<D>&) const;
 private:
-    struct flag { int index = 0; };
+    struct flag { std::size_t index = 0; };
     
     template <typename T>
-    vector(flag, const T);
+    void build(flag, const T);
     
     template <typename T,
               typename... A>
-    vector(flag, const T, const A...);
+    void build(flag, const T, const A...);
     
     double v[D];
 };
 
-template <int D>
+template <std::size_t D>
 inline vector<D>::vector() {
     for (int i = 0; i < D; ++i) {
         v[D] = 0;
     }
 }
 
-template <int D>
+template <std::size_t D>
 template <typename... A>
 inline vector<D>::vector(const A... args) {
     static_assert(sizeof...(A) == D, "error: invalid number of arguments to constructor");
-    vector(flag(), args...);
+    build(flag(), args...);
 }
 
-template <int D>
+template <std::size_t D>
 template <typename T>
-inline vector<D>::vector(flag f, const T next) {
+inline void vector<D>::build(flag f, const T next) {
     static_assert(std::is_arithmetic<T>::value, "error: T not an arithmetic type");
     v[f.index] = next;
 }
 
-template <int D>
+template <std::size_t D>
 template <typename T,
           typename... A>
-inline vector<D>::vector(flag f, const T next, const A... args) {
+inline void vector<D>::build(flag f, const T next, const A... args) {
     static_assert(std::is_arithmetic<T>::value, "error: T not an arithmetic type");
-    std::cout << next << '@' << f.index << " = ";
-    v[f.index] = next;
-    std::cout << v[f.index] << std::endl;
-    f.index += 1;
-    vector(f, args...);
+    v[f.index++] = next;
+    build(f, args...);
 }
 
-template <int D>
+template <std::size_t D>
 inline double& vector<D>::operator[](const std::size_t index) {
     return v[index];
 }
 
-template <int D>
+template <std::size_t D>
 inline const double& vector<D>::operator[](const std::size_t index) const {
     return v[index];
 }
 
-template <int D>
+template <std::size_t D>
+inline vector<D> operator+(vector<D> lh, const vector<D>& rh) {
+    for (int i = 0; i < D; ++i) {
+        lh.v[i] += rh.v[i];
+    }
+    return lh;
+}
+
+template <std::size_t D>
+inline vector<D> operator-(vector<D> lh, const vector<D>& rh) {
+    for (int i = 0; i < D; ++i) {
+        lh.v[i] -= rh.v[i];
+    }
+    return lh;
+}
+
+template <std::size_t D>
+inline double vector<D>::operator*(const vector<D>& rh) const {
+    double product = 0;
+    for (int i = 0; i < D; ++i) {
+        product += v[i] * rh.v[i];
+    }
+    return product;
+}
+
+template <std::size_t D>
 inline double vector<D>::operator()() const {
     double sum = 0;
     for (int i = 0; i < D; ++i) {
@@ -107,31 +138,20 @@ inline double vector<D>::operator()() const {
     return sqrt(sum);
 }
 
-template <int D>
-inline vector<D> operator+(vector<D> lh, const vector<D>& rh) {
-    for (int i = 0; i < D; ++i) {
-        lh.v[0] += rh.v[0];
-    }
-    return lh;
-}
-
-template <int D>
-inline vector<D> operator-(vector<D> lh, const vector<D>& rh) {
-    for (int i = 0; i < D; ++i) {
-        lh.v[i] -= rh.v[i];
-    }
-    return lh;
+template <std::size_t D>
+inline double vector<D>::angle(const vector<D>& rh) const {
+    return std::abs(std::acos(((*this) * rh) / ((*this)() * rh())));
 }
 
 /**
  * Writes a vector to an ostream for easy printing.
  */
-template <int D>
+template <std::size_t D>
 std::ostream& operator<<(std::ostream& os, const vector<D>& v) {
     os << '<';
     if (D > 0) {
         os << v[0];
-        for (int i = 1; i < D; ++i) {
+        for (std::size_t i = 1; i < D; ++i) {
             os << ", " << v[i];
         }
     }
