@@ -15,6 +15,8 @@ template <std::size_t D>
 vector<D> operator+(vector<D>, const vector<D>&);
 template <std::size_t D>
 vector<D> operator-(vector<D>, const vector<D>&);
+template <std::size_t D>
+vector<D> operator*(vector<D>, const double);
 
 /**
  * Simple vector class for my ridiculous polyhedron modeler.
@@ -39,6 +41,11 @@ public:
     
     friend vector<D> operator+ <> (vector<D>, const vector<D>&);
     friend vector<D> operator- <> (vector<D>, const vector<D>&);
+    
+    /**
+     * Scales a vector.
+     */
+    friend vector<D> operator* <> (vector<D>, const double);
     
     /**
      * Finds the dot-product of two vectors.
@@ -119,6 +126,14 @@ template <std::size_t D>
 inline vector<D> operator-(vector<D> lh, const vector<D>& rh) {
     for (int i = 0; i < D; ++i) {
         lh.v[i] -= rh.v[i];
+    }
+    return lh;
+}
+
+template <std::size_t D>
+inline vector<D> operator*(vector<D> lh, const double rh) {
+    for (int i = 0; i < D; ++i) {
+        lh.v[i] *= rh;
     }
     return lh;
 }
