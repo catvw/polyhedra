@@ -45,6 +45,7 @@ public:
     /**
      * Scales a vector.
      */
+    vector<D>& operator*=(const double);
     friend vector<D> operator* <> (vector<D>, const double);
     
     /**
@@ -61,6 +62,7 @@ public:
      * Gets the absolute angle between this vector and another one in radians.
      */
     double angle(const vector<D>&) const;
+    
 private:
     struct flag { std::size_t index = 0; };
     
@@ -74,6 +76,8 @@ private:
     double v[D];
 };
 
+/*----------------------------------------------------------------------------*/
+
 template <std::size_t D>
 inline vector<D>::vector() {
     for (int i = 0; i < D; ++i) {
@@ -84,14 +88,16 @@ inline vector<D>::vector() {
 template <std::size_t D>
 template <typename... A>
 inline vector<D>::vector(const A... args) {
-    static_assert(sizeof...(A) == D, "error: invalid number of arguments to constructor");
+    static_assert(sizeof...(A) == D,
+                  "error: invalid number of arguments to constructor");
     build(flag(), args...);
 }
 
 template <std::size_t D>
 template <typename T>
 inline void vector<D>::build(flag f, const T next) {
-    static_assert(std::is_arithmetic<T>::value, "error: T not an arithmetic type");
+    static_assert(std::is_arithmetic<T>::value,
+                  "error: T not an arithmetic type");
     v[f.index] = next;
 }
 
@@ -99,10 +105,13 @@ template <std::size_t D>
 template <typename T,
           typename... A>
 inline void vector<D>::build(flag f, const T next, const A... args) {
-    static_assert(std::is_arithmetic<T>::value, "error: T not an arithmetic type");
+    static_assert(std::is_arithmetic<T>::value,
+                  "error: T not an arithmetic type");
     v[f.index++] = next;
     build(f, args...);
 }
+
+/*----------------------------------------------------------------------------*/
 
 template <std::size_t D>
 inline double& vector<D>::operator[](const std::size_t index) {
@@ -131,11 +140,16 @@ inline vector<D> operator-(vector<D> lh, const vector<D>& rh) {
 }
 
 template <std::size_t D>
-inline vector<D> operator*(vector<D> lh, const double rh) {
+inline vector<D>& vector<D>::operator*=(const double rh) {
     for (int i = 0; i < D; ++i) {
-        lh.v[i] *= rh;
+        v[i] *= rh;
     }
-    return lh;
+    return *this;
+}
+
+template <std::size_t D>
+inline vector<D> operator*(vector<D> lh, const double rh) {
+    return lh *= rh;
 }
 
 template <std::size_t D>
@@ -156,10 +170,14 @@ inline double vector<D>::operator()() const {
     return sqrt(sum);
 }
 
+/*----------------------------------------------------------------------------*/
+
 template <std::size_t D>
 inline double vector<D>::angle(const vector<D>& rh) const {
     return std::abs(std::acos(((*this) * rh) / ((*this)() * rh())));
 }
+
+/*----------------------------------------------------------------------------*/
 
 /**
  * Writes a vector to an ostream for easy printing.

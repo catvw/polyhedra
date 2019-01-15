@@ -31,6 +31,8 @@ int main(int argc, char** argv) {
     vec3 Q0(-1, 0, 1);
     vec3 Q1(-1, 0, -1);
     
+    height *= Q0(); // correct for unitness
+    
     vec3 Ph(std::cos(phi), 0, std::sin(phi));
     vec3 H(0, height, 0);
     
@@ -41,7 +43,7 @@ int main(int argc, char** argv) {
     
     std::cout << "theta0 = " << deg(theta0) << '\n'
               << "theta1 = " << deg(theta1) << '\n'
-              << "|E| / |Q0| = " << (E() / Q0()) << std::endl;
+              << "|E| = " << (E() / Q0()) << std::endl;
     
     return 0;
 }
