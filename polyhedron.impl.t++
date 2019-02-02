@@ -1,0 +1,65 @@
+#include <iostream> // debugging
+
+template <std::size_t D>
+inline polyhedron<D>::polyhedron() : vs(nullptr) {
+    // TODO
+}
+
+template <std::size_t D>
+inline polyhedron<D>::polyhedron(std::size_t size)
+: v_count(size), vs(new vertex[size]) {
+    std::cout << "created new polyhedron with " << size << " vertices."
+              << std::endl;
+}
+
+template <std::size_t D>
+inline polyhedron<D>::polyhedron(const polyhedron&) {
+    // TODO
+}
+
+template <std::size_t D>
+inline polyhedron<D>::~polyhedron() {
+    delete[] vs;
+    std::cout << "... and destroyed it." << std::endl;
+}
+
+template <std::size_t D>
+inline std::size_t polyhedron<D>::vertices() {
+    return v_count;
+}
+
+template <std::size_t D>
+inline void polyhedron<D>::reallocate(std::size_t size) {
+    delete[] vs;
+    vs = new vertex[size];
+    v_count = size;
+}
+
+/*----------------------------------------------------------------------------*/
+template <std::size_t D>
+inline polyhedron<D>::vertex::vertex() : es(nullptr) { }
+
+template <std::size_t D>
+inline polyhedron<D>::vertex::vertex(std::size_t size)
+: es(new vertex*[size]), e_count(size) {
+    std::cout << "vertex(std::size_t)" << std::endl;
+}
+
+template <std::size_t D>
+inline polyhedron<D>::vertex::~vertex() {
+    delete[] es;
+    std::cout << "~vertex()" << std::endl;
+}
+
+
+template <std::size_t D>
+inline std::size_t polyhedron<D>::vertex::edges() {
+    return e_count;
+}
+
+template <std::size_t D>
+inline void polyhedron<D>::vertex::reallocate(std::size_t size) {
+    delete[] es;
+    es = new vertex*[size];
+    e_count = size;
+}
