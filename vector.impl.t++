@@ -96,21 +96,3 @@ template <std::size_t D>
 inline double vector<D>::angle(const vector<D>& rh) const {
     return std::abs(std::acos(((*this) * rh) / ((*this)() * rh())));
 }
-
-/*----------------------------------------------------------------------------*/
-
-/**
- * Writes a vector to an ostream for easy printing.
- */
-template <std::size_t D>
-std::ostream& operator<<(std::ostream& os, const vector<D>& v) {
-    os << '<';
-    if (D > 0) {
-        os << v[0];
-        for (std::size_t i = 1; i < D; ++i) {
-            os << ", " << v[i];
-        }
-    }
-    os << '>';
-    return os;
-}
