@@ -33,12 +33,13 @@ public:
     
     /**
      * Accesses vector members by index.
-     *
-     * @param the index
      */
     double& operator[](const std::size_t);
     const double& operator[](const std::size_t) const;
     
+    /**
+     * Adds or subtracts two vectors.
+     */
     friend vector<D> operator+ <> (vector<D>, const vector<D>&);
     friend vector<D> operator- <> (vector<D>, const vector<D>&);
     
