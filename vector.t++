@@ -63,6 +63,13 @@ public:
      */
     double angle(const vector<D>&) const;
     
+    /**
+     * Finds the cross-product of two three-vectors.
+     */
+    template <std::size_t U = D>
+    typename std::enable_if<U == 3, vector<D>>::type
+    cross(const vector<D>&) const;
+    
 private:
     struct flag { std::size_t index = 0; };
     
@@ -73,23 +80,7 @@ private:
               typename... A>
     void build(flag, const T, const A...);
     
-protected:
     double v[D];
-};
-
-/**
- * Specialization for vectors in three-space, to enable cross-products.
- * 
- * @author Charles Van West
- */
-template <>
-class vector<3> {
-public:
-    //using ::vector<3>;
-    /**
-     * Finds the cross-product of two three-vectors.
-     */
-    vector<3> cross(const vector<3>&);
 };
 
 /**
