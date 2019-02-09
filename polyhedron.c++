@@ -1,7 +1,7 @@
 #include "polyhedron.h++"
 #include <iostream> // debugging
 
- polyhedron::polyhedron() : vs(nullptr) {
+polyhedron::polyhedron() : vs(nullptr) {
     // TODO
 }
 
