@@ -4,17 +4,16 @@
 #include "vector.t++"
 
 #include <cstddef>
-#include <initializer_list>
+// #include <initializer_list>
 
 /**
- * "Look--it's an n-dimensional polyhedron!"
+ * "Look--it's a polyhedron!"
  * 
  * @author Charles Van West
  */
-template <std::size_t D>
 class polyhedron {
 public:
-    using vector_t = vector<D>;
+    using vector_t = vector<3>;
     
     /**
      * Constructs an empty polyhedron.
@@ -86,7 +85,5 @@ private:
     std::size_t v_count;
     vertex* vs;
 };
-
-#include "polyhedron.impl.t++"
 
 #endif
